@@ -111,6 +111,9 @@ export default function Home() {
         <p>Carregando...</p>
       ) : data.length > 0 ? (
         <>
+          <div className="mb-4 text-lg">
+            <p>Quantidade de respostas (afilhados): {filteredData.length}</p>
+          </div>
           <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mb-6">
             <Select onValueChange={handleFilterFieldChange} value={filterField}>
               <SelectTrigger className="w-full sm:w-[180px]">
