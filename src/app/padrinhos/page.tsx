@@ -31,6 +31,10 @@ export default function PadrinhosPage() {
   const [filterField, setFilterField] = useState<string>("Nome");
   const [filterValue, setFilterValue] = useState<string>("");
   const [selectedRow, setSelectedRow] = useState<string[] | null>(null);
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc" | null>(
+    null
+  );
+  const [sortColumn, setSortColumn] = useState<string | null>(null);
 
   useEffect(() => {
     // Se a lista de VISIBLE_COLUMNS não estiver vazia, define o primeiro valor como padrão
@@ -78,6 +82,32 @@ export default function PadrinhosPage() {
         setFilteredData([]);
       });
   }, []);
+
+  const handleSort = (column: string) => {
+    const isSameColumn = column === sortColumn;
+    const direction = isSameColumn
+      ? sortDirection === "asc"
+        ? "desc"
+        : "asc"
+      : "asc";
+    setSortDirection(direction);
+    setSortColumn(column);
+
+    // Ordena os dados conforme a direção
+    const columnIndex = column === "Nome" ? 0 : column === "Documento" ? 1 : -1;
+    const sortedData = [...filteredData].sort((a, b) => {
+      const aValue = (a[columnIndex] ?? "").toString().toLowerCase();
+      const bValue = (b[columnIndex] ?? "").toString().toLowerCase();
+
+      if (direction === "asc") {
+        return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
+      } else {
+        return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
+      }
+    });
+
+    setFilteredData(sortedData);
+  };
 
   useEffect(() => {
     if (data.length > 0) {
@@ -154,8 +184,14 @@ export default function PadrinhosPage() {
                 <TableHeader>
                   <TableRow>
                     {VISIBLE_COLUMNS.map((header, index) => (
-                      <TableHead key={index} className="min-w-[150px]">
+                      <TableHead
+                        key={index}
+                        onClick={() => handleSort(header)}
+                        className="cursor-pointer min-w-[150px]"
+                      >
                         {header}
+                        {sortColumn === header &&
+                          (sortDirection === "asc" ? " 🔼" : " 🔽")}
                       </TableHead>
                     ))}
                   </TableRow>
