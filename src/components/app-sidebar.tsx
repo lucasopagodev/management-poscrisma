@@ -5,6 +5,7 @@ import {
   BookHeart,
   Shirt,
   CircleDollarSign,
+  Baby,
 } from "lucide-react";
 
 import {
@@ -44,6 +45,11 @@ const items = [
     title: "Pagamentos",
     url: "/pagamentos",
     icon: CircleDollarSign,
+  },
+  {
+    title: "Mascotes",
+    url: "/mascotes",
+    icon: Baby,
   },
   {
     title: "Settings",
