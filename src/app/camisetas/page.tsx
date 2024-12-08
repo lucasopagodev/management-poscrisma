@@ -19,8 +19,15 @@ export default function Camisetas() {
   const [data1, setData1] = useState<SheetData>([]);
   const [data2, setData2] = useState<SheetData>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [tamanhos1, setTamanhos1] = useState<TamanhosCount>({});
-  const [tamanhos2, setTamanhos2] = useState<TamanhosCount>({});
+  const [tamanhosAfilhados, setTamanhosAfilhados] = useState<TamanhosCount>({});
+  const [tamanhosCrismandos, setTamanhosCrismandos] = useState<TamanhosCount>(
+    {}
+  );
+  const [tamanhosPadrinhos, setTamanhosPadrinhos] = useState<TamanhosCount>({});
+  const [tamanhosMadrinhas, setTamanhosMadrinhas] = useState<TamanhosCount>({});
+  const [tamanhosVoluntarios, setTamanhosVoluntarios] = useState<TamanhosCount>(
+    {}
+  );
 
   useEffect(() => {
     Promise.all([
@@ -30,11 +37,20 @@ export default function Camisetas() {
       .then(([result1, result2]) => {
         if (Array.isArray(result1.data) && result1.data.length > 0) {
           setData1(result1.data);
-          setTamanhos1(processarDados(result1.data, false));
+          const { afilhados, crismandos } = processarDadosPlanilha1(
+            result1.data
+          );
+          setTamanhosAfilhados(afilhados);
+          setTamanhosCrismandos(crismandos);
         }
         if (Array.isArray(result2.data) && result2.data.length > 0) {
           setData2(result2.data);
-          setTamanhos2(processarDados(result2.data, true));
+          const { padrinhos, madrinhas, voluntarios } = processarDadosPlanilha2(
+            result2.data
+          );
+          setTamanhosPadrinhos(padrinhos);
+          setTamanhosMadrinhas(madrinhas);
+          setTamanhosVoluntarios(voluntarios);
         }
         setIsLoading(false);
       })
@@ -44,51 +60,76 @@ export default function Camisetas() {
       });
   }, []);
 
-  function processarDados(
-    data: SheetData,
-    isCasalSheet: boolean
-  ): TamanhosCount {
+  function processarDadosPlanilha1(data: SheetData) {
     const headers = data[0];
     const tamanhoIndex = headers.findIndex(
       (header: string) =>
         header.toLowerCase() === "qual o tamanho da sua camiseta?"
     );
-    const casalIndex = isCasalSheet
-      ? headers.findIndex(
-          (header: string) => header.toLowerCase() === "é casal?"
-        )
-      : -1;
-    const tamanhoHomemIndex = isCasalSheet
-      ? headers.findIndex(
-          (header: string) =>
-            header.toLowerCase() === "qual o tamanho da sua camiseta? (homem)"
-        )
-      : -1;
-    const tamanhoMulherIndex = isCasalSheet
-      ? headers.findIndex(
-          (header: string) =>
-            header.toLowerCase() === "qual o tamanho da sua camiseta? (mulher)"
-        )
-      : -1;
+    const casalPadrinhoCatequistaIndex = headers.findIndex(
+      (header: string) =>
+        header.toLowerCase() === "casal padrinho ou catequista"
+    );
 
-    return data.slice(1).reduce((acc: TamanhosCount, row: string[]) => {
-      if (isCasalSheet) {
-        const eCasal = row[casalIndex]?.trim().toLowerCase() === "sim";
-        if (eCasal) {
-          const tamanhoHomem = row[tamanhoHomemIndex]?.trim();
-          const tamanhoMulher = row[tamanhoMulherIndex]?.trim();
-          if (tamanhoHomem) acc[tamanhoHomem] = (acc[tamanhoHomem] || 0) + 1;
-          if (tamanhoMulher) acc[tamanhoMulher] = (acc[tamanhoMulher] || 0) + 1;
+    const afilhados: TamanhosCount = {};
+    const crismandos: TamanhosCount = {};
+
+    data.slice(1).forEach((row: string[]) => {
+      const tamanho = row[tamanhoIndex]?.trim();
+      const casalPadrinhoCatequista = row[casalPadrinhoCatequistaIndex]?.trim();
+
+      if (tamanho) {
+        if (
+          casalPadrinhoCatequista &&
+          casalPadrinhoCatequista.toLowerCase().includes("catequista")
+        ) {
+          crismandos[tamanho] = (crismandos[tamanho] || 0) + 1;
         } else {
-          const tamanho = row[tamanhoIndex]?.trim();
-          if (tamanho) acc[tamanho] = (acc[tamanho] || 0) + 1;
+          afilhados[tamanho] = (afilhados[tamanho] || 0) + 1;
         }
-      } else {
-        const tamanho = row[tamanhoIndex]?.trim();
-        if (tamanho) acc[tamanho] = (acc[tamanho] || 0) + 1;
       }
-      return acc;
-    }, {});
+    });
+
+    return { afilhados, crismandos };
+  }
+
+  function processarDadosPlanilha2(data: SheetData) {
+    const headers = data[0];
+    const tamanhoHomemIndex = headers.findIndex(
+      (header: string) =>
+        header.toLowerCase() === "qual o tamanho da sua camiseta? (homem)"
+    );
+    const tamanhoMulherIndex = headers.findIndex(
+      (header: string) =>
+        header.toLowerCase() === "qual o tamanho da sua camiseta? (mulher)"
+    );
+    const tamanhoVoluntarioIndex = headers.findIndex(
+      (header: string) =>
+        header.toLowerCase() === "qual o tamanho da sua camiseta?"
+    );
+
+    const padrinhos: TamanhosCount = {};
+    const madrinhas: TamanhosCount = {};
+    const voluntarios: TamanhosCount = {};
+
+    data.slice(1).forEach((row: string[]) => {
+      const tamanhoHomem = row[tamanhoHomemIndex]?.trim();
+      const tamanhoMulher = row[tamanhoMulherIndex]?.trim();
+      const tamanhoVoluntario = row[tamanhoVoluntarioIndex]?.trim();
+
+      if (tamanhoHomem) {
+        padrinhos[tamanhoHomem] = (padrinhos[tamanhoHomem] || 0) + 1;
+      }
+      if (tamanhoMulher) {
+        madrinhas[tamanhoMulher] = (madrinhas[tamanhoMulher] || 0) + 1;
+      }
+      if (tamanhoVoluntario) {
+        voluntarios[tamanhoVoluntario] =
+          (voluntarios[tamanhoVoluntario] || 0) + 1;
+      }
+    });
+
+    return { padrinhos, madrinhas, voluntarios };
   }
 
   function renderTable(tamanhos: TamanhosCount, title: string) {
@@ -144,11 +185,11 @@ export default function Camisetas() {
         <p>Carregando...</p>
       ) : (
         <>
-          {renderTable(tamanhos1, "Afilhado - Camisetas")}
-          {renderTable(
-            tamanhos2,
-            "Padrinhos/Catequistas - Camisetas (com casais)"
-          )}
+          {renderTable(tamanhosAfilhados, "Afilhados - Camisetas")}
+          {renderTable(tamanhosCrismandos, "Crismandos - Camisetas")}
+          {renderTable(tamanhosPadrinhos, "Padrinhos - Camisetas")}
+          {renderTable(tamanhosMadrinhas, "Madrinhas - Camisetas")}
+          {renderTable(tamanhosVoluntarios, "Voluntários - Camisetas")}
         </>
       )}
     </div>
