@@ -98,14 +98,15 @@ export default function BuscaPessoas() {
       const eCasalIndex = headers.findIndex((header: string) =>
         header.toLowerCase().includes("é casal?")
       );
-      const nomeIndex = headers.findIndex((header: string) =>
-        header.toLowerCase().includes("nome completo")
+      const nomeIndex = headers.findIndex(
+        (header: string) => header.toLowerCase() === "nome completo"
       );
-      const cpfIndex = headers.findIndex((header: string) =>
-        header.toLowerCase().includes("cpf ou rg")
+      const cpfIndex = headers.findIndex(
+        (header: string) => header.toLowerCase() === "cpf ou rg"
       );
-      const tamanhoIndex = headers.findIndex((header: string) =>
-        header.toLowerCase().includes("qual o tamanho da sua camiseta?")
+      const tamanhoIndex = headers.findIndex(
+        (header: string) =>
+          header.toLowerCase() === "qual o tamanho da sua camiseta?"
       );
       const nomeHomemIndex = headers.findIndex((header: string) =>
         header.toLowerCase().includes("nome completo (homem)")
@@ -173,7 +174,6 @@ export default function BuscaPessoas() {
             console.log("Adicionada Madrinha:", nomeMulher);
           }
         } else {
-          // Caso "É casal?" seja "não"
           const nome = row[nomeIndex]?.trim();
           const cpf = row[cpfIndex]?.trim();
           const tamanho = row[tamanhoIndex]?.trim();
@@ -186,6 +186,8 @@ export default function BuscaPessoas() {
               tipo: "Voluntário",
             });
             console.log("Adicionado Voluntário:", nome);
+          } else {
+            console.log("Linha ignorada (dados incompletos):", row);
           }
         }
       });
@@ -225,7 +227,9 @@ export default function BuscaPessoas() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Lista de Pessoas</CardTitle>
+              <CardTitle>
+                Lista de Pessoas - Quantidade: {pessoasFiltradas.length}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <Table>

@@ -1,12 +1,4 @@
-import {
-  Home,
-  UserRoundSearch,
-  Settings,
-  BookHeart,
-  Shirt,
-  CircleDollarSign,
-  Baby,
-} from "lucide-react";
+import { Home, UserRoundSearch, BookHeart, Shirt, Baby } from "lucide-react";
 
 import {
   Sidebar,
@@ -18,6 +10,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import React from "react";
 
 // Menu items.
 const items = [
@@ -42,24 +35,14 @@ const items = [
     icon: Shirt,
   },
   {
-    title: "Busca camisetas",
+    title: "Busca Camisetas",
     url: "/camisetas/busca",
     icon: Shirt,
-  },
-  {
-    title: "Pagamentos",
-    url: "/pagamentos",
-    icon: CircleDollarSign,
   },
   {
     title: "Mascotes",
     url: "/mascotes",
     icon: Baby,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
   },
 ];
 
