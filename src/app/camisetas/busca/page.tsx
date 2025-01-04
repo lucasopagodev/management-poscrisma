@@ -20,6 +20,10 @@ type PessoaInfo = {
   tipo: string;
 };
 
+function removerAcentos(str: string): string {
+  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
 export default function BuscaPessoas() {
   const [data1, setData1] = useState<SheetData>([]);
   const [data2, setData2] = useState<SheetData>([]);
@@ -60,8 +64,9 @@ export default function BuscaPessoas() {
   }, [data1, data2]);
 
   useEffect(() => {
+    const termoBuscaSemAcento = removerAcentos(searchTerm.toLowerCase());
     const resultados = todasPessoas.filter((pessoa) =>
-      pessoa.nome.toLowerCase().includes(searchTerm.toLowerCase())
+      removerAcentos(pessoa.nome.toLowerCase()).includes(termoBuscaSemAcento)
     );
     setPessoasFiltradas(resultados);
   }, [searchTerm, todasPessoas]);
