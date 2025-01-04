@@ -42,6 +42,11 @@ const items = [
     icon: Shirt,
   },
   {
+    title: "Busca camisetas",
+    url: "/camisetas/busca",
+    icon: Shirt,
+  },
+  {
     title: "Pagamentos",
     url: "/pagamentos",
     icon: CircleDollarSign,
